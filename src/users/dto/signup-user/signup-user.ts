@@ -2,7 +2,6 @@ import { IsString, MaxLength, MinLength } from "class-validator";
 import mongoose from "mongoose";
 
 export class SignupUser {
-    @IsString()
     id: mongoose.Types.ObjectId;
     
     @IsString()
@@ -14,6 +13,5 @@ export class SignupUser {
     @MinLength(5)
     password: string
 
-    @IsString()
     role: string
 }

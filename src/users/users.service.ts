@@ -25,7 +25,7 @@ export class UsersService {
             return { message: 'This username is already exist' }
         }
 
-        await User.create({ ...signupUser, password, role: usersCount > 0 ? 'USER' : 'ADMIN' })
+        await User.create({ ...signupUser, password, role: usersCount > 0 ? "USER" : "ADMIN" })
         return { message: 'User Signuped' }
 
     }
