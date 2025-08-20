@@ -2,17 +2,13 @@ import { Injectable, NotFoundException, UnauthorizedException, ConflictException
 import connectToDb from 'configs/db';
 import { SignupUser } from './dto/signup-user/signup-user';
 import User from 'models/user';
-import { hashPassHandler, verifyPassHandler } from 'configs/auth';
+import { hashPassHandler, verifyPassHandler, veryfiTokenHandler } from 'configs/auth';
 import { LoginUsers } from './dto/login-users/login-users';
+import { Request } from 'express';
 
 connectToDb()
 @Injectable()
 export class UsersService {
-
-    async getAllUser(): Promise<object> {
-        let allUsers = await User.find({})
-        return allUsers
-    }
 
     async setNewUser(signupUser: SignupUser): Promise<object> {
 
@@ -46,5 +42,35 @@ export class UsersService {
         }
 
         return user
+    }
+
+    async getUserFromRequest(req: Request) {
+
+        const token = req.cookies?.['access_token']
+
+        if (!token) {
+            throw new UnauthorizedException('Token not found')
+        }
+
+        try {
+
+            const verifiedToken = await veryfiTokenHandler(token)
+
+            if (!verifiedToken) {
+                throw new UnauthorizedException('Invalid token')
+            }
+
+            const mainUser = await User.findOne({ username: verifiedToken.username })
+
+            if (!mainUser) {
+                throw new UnauthorizedException('User not found')
+            }
+
+            return mainUser
+
+
+        } catch (error) {
+            throw new UnauthorizedException('Invalid or expired token')
+        }
     }
 }

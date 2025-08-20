@@ -1,5 +1,5 @@
 import { compare, hash } from "bcryptjs"
-import { sign } from 'jsonwebtoken'
+import { sign, verify } from 'jsonwebtoken'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -18,4 +18,13 @@ const verifyPassHandler = async (password, hashedPassword) => {
     return verifiedPass
 }
 
-export { hashPassHandler, generateToken, verifyPassHandler }
+const veryfiTokenHandler = async (token) => {
+    try {
+        const verifiedToken = verify(token, process.env.privateKey)
+        return verifiedToken
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export { hashPassHandler, generateToken, verifyPassHandler, veryfiTokenHandler }
