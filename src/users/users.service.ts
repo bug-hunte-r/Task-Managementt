@@ -62,12 +62,7 @@ export class UsersService {
 
             const mainUser = await User.findOne({ username: verifiedToken.username })
 
-            if (!mainUser) {
-                throw new UnauthorizedException('User not found')
-            }
-
             return mainUser
-
 
         } catch (error) {
             throw new UnauthorizedException('Invalid or expired token')
