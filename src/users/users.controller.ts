@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { SignupUser } from './dto/signup-user/signup-user';
 import type { Response } from 'express';
 import { generateToken } from 'configs/auth';
+import { LoginUsers } from './dto/login-users/login-users';
 
 @Controller('users')
 export class UsersController {
@@ -16,20 +17,55 @@ export class UsersController {
     @Post('Signup')
     async setNewUser(@Body() signupUser: SignupUser, @Res() res: Response) {
 
-        const token = generateToken({ username: signupUser.username })
+        try {
+            const newUser = await this.userService.setNewUser(signupUser)
+            
+            const token = generateToken({ username: signupUser.username })
+    
+            res.cookie('access_token', token, {
+                httpOnly: true,
+                path: '/',
+                secure: true,
+                sameSite: 'strict'
+            })
+    
+    
+            res.status(201).json({
+                data: newUser,
+            })
+            
+        } catch (error) {
+            
+            res.status(error.getStatus ? error.getStatus() : 500).json({
+                message: error.message
+            })
+        }
 
-        res.cookie('access_token', token, {
-            httpOnly: true,
-            path: '/',
-            secure: true,
-            sameSite: 'strict'
-        })
+    }
 
-        const newUser = await this.userService.setNewUser(signupUser)
+    @Post('Login')
+    async loginUser(@Body() loginUser: LoginUsers, @Res() res: Response) {
 
-        res.json ({
-            data: newUser,
-            message: 'User Signuped'
-        })
+        try {
+            await this.userService.loginUser(loginUser)
+
+            const token = generateToken({ username: loginUser.username })
+
+            res.cookie('access_token', token, {
+                httpOnly: true,
+                path: '/',
+                secure: true,
+                sameSite: 'strict'
+            })
+
+            return res.status(200).json({ message: 'User logged in' })
+
+        } catch (error) {
+
+            res.status(error.getStatus ? error.getStatus() : 500).json({
+                message: error.message
+            })
+        }
+
     }
 }
