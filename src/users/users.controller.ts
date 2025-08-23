@@ -21,7 +21,8 @@ export class UsersController {
                 httpOnly: true,
                 path: '/',
                 secure: true,
-                sameSite: 'strict'
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60 * 48
             })
 
 
@@ -50,7 +51,8 @@ export class UsersController {
                 httpOnly: true,
                 path: '/',
                 secure: true,
-                sameSite: 'strict'
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60 * 48
             })
 
             return res.status(200).json({ message: 'User logged in' })

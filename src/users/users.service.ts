@@ -1,16 +1,14 @@
 import { Injectable, NotFoundException, UnauthorizedException, ConflictException } from '@nestjs/common';
-import connectToDb from 'configs/db';
 import { SignupUser } from './dto/signup-user/signup-user';
 import User from 'models/user';
 import { hashPassHandler, verifyPassHandler, veryfiTokenHandler } from 'configs/auth';
 import { LoginUsers } from './dto/login-users/login-users';
 import { Request } from 'express';
 
-connectToDb()
 @Injectable()
 export class UsersService {
 
-    async setNewUser(signupUser: SignupUser): Promise<object> {
+    async setNewUser(signupUser: SignupUser) {
 
         let usersCount = await User.countDocuments()
 
@@ -23,11 +21,9 @@ export class UsersService {
         }
 
         await User.create({ ...signupUser, password, role: usersCount > 0 ? "USER" : "ADMIN" })
-        return { message: 'User Signuped' }
-
     }
 
-    async loginUser(loginUser: LoginUsers): Promise<object> {
+    async loginUser(loginUser: LoginUsers){
 
         const user = await User.findOne({ username: loginUser.username })
 
@@ -40,19 +36,17 @@ export class UsersService {
         if (!verifiedPass) {
             throw new UnauthorizedException('Username or password is not correct');
         }
-
-        return user
     }
 
     async getUserFromRequest(req: Request) {
 
-        const token = req.cookies?.['access_token']
-
-        if (!token) {
-            throw new UnauthorizedException('Token not found')
-        }
-
         try {
+
+            const token = req.cookies?.['access_token']
+
+            if (!token) {
+                throw new UnauthorizedException('Token not found')
+            }
 
             const verifiedToken = await veryfiTokenHandler(token)
 
