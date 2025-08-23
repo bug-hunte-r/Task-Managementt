@@ -27,7 +27,7 @@ export class UsersController {
 
 
             res.status(201).json({
-                data: newUser,
+                message: 'User Signuped'
             })
 
         } catch (error) {
